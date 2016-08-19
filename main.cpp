@@ -30,16 +30,24 @@ int main(int argc, char *argv[])
     cv::cuda::GpuMat d_templ(templ);
     cv::Size corrSize(img.cols - templ.cols + 1, img.rows - templ.rows + 1);
     cv::cuda::GpuMat d_result(corrSize, CV_32FC1, cv::Scalar(0.0f));
+    cv::cuda::GpuMat d_result2(corrSize, CV_32FC1, cv::Scalar(0.0f));
 
     // CUDA Implementation
     start = cv::getTickCount();
     launchMatchTemplateGpu(d_img, d_templ, d_result);
     end = cv::getTickCount();
     std::cout << "CUDA: " << ((end - start) * f) << " ms." << std::endl;
+
+    // CUDA Implementation(shared memory)
+    start = cv::getTickCount();
+    launchMatchTemplateGpu_opt(d_img, d_templ, d_result2);
+    end = cv::getTickCount();
+    std::cout << "CUDA(opt): " << ((end - start) * f) << " ms." << std::endl;
     std::cout << std::endl;
 
     // Verification
     verify(result, d_result);
+    verify(result, d_result2);
 
     return 0;
 }

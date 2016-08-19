@@ -19,7 +19,7 @@ void matchTemplateCpu
                 const uchar* ptempl = templ.ptr<uchar>(yy);
                 for(int xx = 0; xx < templ.cols; xx++){
                     int diff = pimg[x + xx] - ptempl[xx];
-                    sum += diff*diff;
+                    sum += (diff*diff);
                 }
             }
             presult[x] = sum;
