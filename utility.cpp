@@ -8,14 +8,14 @@ void verify
 )
 {
     cv::Mat h_img1, h_img2;
-    if (img1.kind() == cv::_InputArray::CUDA_GPU_MAT){
+    if(img1.kind() == cv::_InputArray::CUDA_GPU_MAT){
         img1.getGpuMat().download(h_img1);
     }
     else{
         h_img1 = img1.getMat();
     }
 
-    if (img2.kind() == cv::_InputArray::CUDA_GPU_MAT){
+    if(img2.kind() == cv::_InputArray::CUDA_GPU_MAT){
         img2.getGpuMat().download(h_img2);
     }
     else{

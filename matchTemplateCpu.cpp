@@ -15,7 +15,7 @@ void matchTemplateCpu
         for(int x = 0; x < result.cols; x++){
             long sum = 0;
             for(int yy = 0; yy < templ.rows; yy++){
-                const uchar* pimg = img.ptr<uchar>(y + yy);
+                const uchar* pimg   = img.ptr<uchar>(y + yy);
                 const uchar* ptempl = templ.ptr<uchar>(yy);
                 for(int xx = 0; xx < templ.cols; xx++){
                     int diff = pimg[x + xx] - ptempl[xx];
