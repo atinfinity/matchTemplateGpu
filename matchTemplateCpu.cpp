@@ -7,9 +7,6 @@ void matchTemplateCpu
     cv::Mat& result
 )
 {
-    cv::Size corrSize(img.cols - templ.cols + 1, img.rows - templ.rows + 1);
-    result.create(corrSize, CV_32F);
-
     for(int y = 0; y < result.rows; y++){
         float* presult = result.ptr<float>(y);
         for(int x = 0; x < result.cols; x++){

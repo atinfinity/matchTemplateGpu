@@ -9,7 +9,9 @@ int main(int argc, char *argv[])
 {
     cv::Mat img(sz1080p, CV_8UC1, cv::Scalar(0));
     cv::Mat templ(cv::Size(32, 32), CV_8UC1, cv::Scalar(255));
-    cv::Mat result, result_cv;
+    cv::Size corrSize(img.cols - templ.cols + 1, img.rows - templ.rows + 1);
+    cv::Mat result(corrSize, CV_32FC1, cv::Scalar(0.0f));
+    cv::Mat result_cv(corrSize, CV_32FC1, cv::Scalar(0.0f));
 
     double f = 1000.0f / cv::getTickFrequency();
     int64 start = 0, end = 0;
@@ -28,7 +30,6 @@ int main(int argc, char *argv[])
 
     cv::cuda::GpuMat d_img(img);
     cv::cuda::GpuMat d_templ(templ);
-    cv::Size corrSize(img.cols - templ.cols + 1, img.rows - templ.rows + 1);
     cv::cuda::GpuMat d_result(corrSize, CV_32FC1, cv::Scalar(0.0f));
     cv::cuda::GpuMat d_result2(corrSize, CV_32FC1, cv::Scalar(0.0f));
 
