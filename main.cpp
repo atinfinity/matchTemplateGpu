@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     cv::cuda::GpuMat d_templ(templ);
     cv::cuda::GpuMat d_result(corrSize, CV_32FC1, cv::Scalar(0.0f));
     cv::cuda::GpuMat d_result2(corrSize, CV_32FC1, cv::Scalar(0.0f));
+    cv::cuda::GpuMat d_result3(corrSize, CV_32FC1, cv::Scalar(0.0f));
 
     // CUDA Implementation
     time = launchMatchTemplateGpu(d_img, d_templ, d_result, loop_num);
@@ -35,11 +36,16 @@ int main(int argc, char *argv[])
     time = launchMatchTemplateGpu_opt(d_img, d_templ, d_result2, loop_num);
     std::cout << "CUDA(opt): " << time << " ms." << std::endl;
 
+    // CUDA Implementation(shared memory+__ldg)
+    time = launchMatchTemplateGpu_opt2(d_img, d_templ, d_result3, loop_num);
+    std::cout << "CUDA(opt2): " << time << " ms." << std::endl;
+
     std::cout << std::endl;
 
     // Verification
     verify(result, d_result);
     verify(result, d_result2);
+    verify(result, d_result3);
 
     return 0;
 }
