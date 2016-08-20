@@ -11,8 +11,8 @@ __global__ void matchTemplateGpu
     cv::cudev::PtrStepSz<float> result
 )
 {
-    int x = blockDim.x * blockIdx.x + threadIdx.x;
-    int y = blockDim.y * blockIdx.y + threadIdx.y;
+    const int x = blockDim.x * blockIdx.x + threadIdx.x;
+    const int y = blockDim.y * blockIdx.y + threadIdx.y;
 
     if((x < result.cols) && (y < result.rows)){
         long sum = 0;
@@ -34,8 +34,8 @@ __global__ void matchTemplateGpu_opt
     cv::cudev::PtrStepSz<float> result
 )
 {
-    int x = blockDim.x * blockIdx.x + threadIdx.x;
-    int y = blockDim.y * blockIdx.y + threadIdx.y;
+    const int x = blockDim.x * blockIdx.x + threadIdx.x;
+    const int y = blockDim.y * blockIdx.y + threadIdx.y;
 
     extern __shared__ uchar temp[];
 
@@ -85,6 +85,7 @@ void launchMatchTemplateGpu
     CV_CUDEV_SAFE_CALL(cudaDeviceSynchronize());
 }
 
+// use shared memory
 void launchMatchTemplateGpu_opt
 (
     cv::cuda::GpuMat& img,
@@ -109,4 +110,49 @@ void launchMatchTemplateGpu_opt
 
     CV_CUDEV_SAFE_CALL(cudaGetLastError());
     CV_CUDEV_SAFE_CALL(cudaDeviceSynchronize());
+}
+
+double launchMatchTemplateGpu
+(
+    cv::cuda::GpuMat& img, 
+    cv::cuda::GpuMat& templ, 
+    cv::cuda::GpuMat& result, 
+    const int loop_num
+)
+{
+    double f = 1000.0f / cv::getTickFrequency();
+    int64 start = 0, end = 0;
+    double time = 0.0;
+    for (int i = 0; i <= loop_num; i++){
+        start = cv::getTickCount();
+        launchMatchTemplateGpu(img, templ, result);
+        end = cv::getTickCount();
+        time += (i > 0) ? ((end - start) * f) : 0;
+    }
+    time /= loop_num;
+
+    return time;
+}
+
+// use shared memory
+double launchMatchTemplateGpu_opt
+(
+    cv::cuda::GpuMat& img, 
+    cv::cuda::GpuMat& templ, 
+    cv::cuda::GpuMat& result, 
+    const int loop_num
+)
+{
+    double f = 1000.0f / cv::getTickFrequency();
+    int64 start = 0, end = 0;
+    double time = 0.0;
+    for (int i = 0; i <= loop_num; i++){
+        start = cv::getTickCount();
+        launchMatchTemplateGpu_opt(img, templ, result);
+        end = cv::getTickCount();
+        time += (i > 0) ? ((end - start) * f) : 0;
+    }
+    time /= loop_num;
+
+    return time;
 }

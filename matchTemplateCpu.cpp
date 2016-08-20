@@ -1,4 +1,5 @@
 ﻿#include "matchTemplateCpu.h"
+#include <opencv2/imgproc.hpp>
 
 void matchTemplateCpu
 (
@@ -22,4 +23,48 @@ void matchTemplateCpu
             presult[x] = sum;
         }
     }
+}
+
+double launchMatchTemplateCpu
+(
+    const cv::Mat& img, 
+    const cv::Mat& templ, 
+    cv::Mat& result, 
+    const int loop_num
+)
+{
+    double f = 1000.0f/cv::getTickFrequency();
+    int64 start = 0, end = 0;
+    double time = 0.0;
+    for(int i = 0; i <= loop_num; i++){
+        start = cv::getTickCount();
+        matchTemplateCpu(img, templ, result);
+        end = cv::getTickCount();
+        time += (i > 0) ? ((end - start) * f) : 0;
+    }
+    time /= loop_num;
+
+    return time;
+}
+
+double launchMatchTemplateCV
+(
+    const cv::Mat& img,
+    const cv::Mat& templ,
+    cv::Mat& result,
+    const int loop_num
+)
+{
+    double f = 1000.0f / cv::getTickFrequency();
+    int64 start = 0, end = 0;
+    double time = 0.0;
+    for (int i = 0; i <= loop_num; i++){
+        start = cv::getTickCount();
+        cv::matchTemplate(img, templ, result, cv::TM_SQDIFF);
+        end = cv::getTickCount();
+        time += (i > 0) ? ((end - start) * f) : 0;
+    }
+    time /= loop_num;
+
+    return time;
 }
