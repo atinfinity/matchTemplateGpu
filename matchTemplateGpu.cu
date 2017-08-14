@@ -1,6 +1,6 @@
 ﻿#include "matchTemplateGpu.cuh"
 
-#include <opencv2/cudev.hpp>
+#include <opencv2/cudev/common.hpp>
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
@@ -103,19 +103,10 @@ void launchMatchTemplateGpu
     cv::cuda::GpuMat& result
 )
 {
-    cv::cudev::PtrStepSz<uchar> pImg =
-        cv::cudev::PtrStepSz<uchar>(img.rows, img.cols * img.channels(), img.ptr<uchar>(), img.step);
-
-    cv::cudev::PtrStepSz<uchar> pDst =
-        cv::cudev::PtrStepSz<uchar>(templ.rows, templ.cols * templ.channels(), templ.ptr<uchar>(), templ.step);
-
-    cv::cudev::PtrStepSz<float> pResult =
-        cv::cudev::PtrStepSz<float>(result.rows, result.cols * result.channels(), result.ptr<float>(), result.step);
-
     const dim3 block(64, 2);
     const dim3 grid(cv::cudev::divUp(result.cols, block.x), cv::cudev::divUp(result.rows, block.y));
 
-    matchTemplateGpu<<<grid, block>>>(pImg, pDst, pResult);
+    matchTemplateGpu<<<grid, block>>>(img, templ, result);
 
     CV_CUDEV_SAFE_CALL(cudaGetLastError());
     CV_CUDEV_SAFE_CALL(cudaDeviceSynchronize());
@@ -129,20 +120,11 @@ void launchMatchTemplateGpu_opt
     cv::cuda::GpuMat& result
 )
 {
-    cv::cudev::PtrStepSz<uchar> pImg =
-        cv::cudev::PtrStepSz<uchar>(img.rows, img.cols * img.channels(), img.ptr<uchar>(), img.step);
-
-    cv::cudev::PtrStepSz<uchar> pDst =
-        cv::cudev::PtrStepSz<uchar>(templ.rows, templ.cols * templ.channels(), templ.ptr<uchar>(), templ.step);
-
-    cv::cudev::PtrStepSz<float> pResult =
-        cv::cudev::PtrStepSz<float>(result.rows, result.cols * result.channels(), result.ptr<float>(), result.step);
-
     const dim3 block(64, 2);
     const dim3 grid(cv::cudev::divUp(result.cols, block.x), cv::cudev::divUp(result.rows, block.y));
     const size_t shared_mem_size = templ.cols*templ.rows*sizeof(uchar);
 
-    matchTemplateGpu_opt<<<grid, block, shared_mem_size>>>(pImg, pDst, pResult);
+    matchTemplateGpu_opt<<<grid, block, shared_mem_size>>>(img, templ, result);
 
     CV_CUDEV_SAFE_CALL(cudaGetLastError());
     CV_CUDEV_SAFE_CALL(cudaDeviceSynchronize());
@@ -156,20 +138,11 @@ void launchMatchTemplateGpu_opt2
     cv::cuda::GpuMat& result
 )
 {
-    cv::cudev::PtrStepSz<uchar> pImg =
-        cv::cudev::PtrStepSz<uchar>(img.rows, img.cols * img.channels(), img.ptr<uchar>(), img.step);
-
-    cv::cudev::PtrStepSz<uchar> pDst =
-        cv::cudev::PtrStepSz<uchar>(templ.rows, templ.cols * templ.channels(), templ.ptr<uchar>(), templ.step);
-
-    cv::cudev::PtrStepSz<float> pResult =
-        cv::cudev::PtrStepSz<float>(result.rows, result.cols * result.channels(), result.ptr<float>(), result.step);
-
     const dim3 block(64, 2);
     const dim3 grid(cv::cudev::divUp(result.cols, block.x), cv::cudev::divUp(result.rows, block.y));
     const size_t shared_mem_size = templ.cols*templ.rows*sizeof(uchar);
 
-    matchTemplateGpu_opt2<<<grid, block, shared_mem_size>>>(pImg, pDst, pResult);
+    matchTemplateGpu_opt2<<<grid, block, shared_mem_size>>>(img, templ, result);
 
     CV_CUDEV_SAFE_CALL(cudaGetLastError());
     CV_CUDEV_SAFE_CALL(cudaDeviceSynchronize());
