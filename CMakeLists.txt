@@ -20,10 +20,10 @@ if(CUDA_FOUND)
   endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
   if(OpenCV_FOUND)
-    CUDA_ADD_EXECUTABLE(matchTemplateGpu ${SOURCES})
-
     CUDA_INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
-    include_directories(${OpenCV_INCLUDE_DIRS})
+    include_directories(${OpenCV_INCLUDE_DIRS}
+
+    CUDA_ADD_EXECUTABLE(matchTemplateGpu ${SOURCES})
 
     target_link_libraries(matchTemplateGpu ${OpenCV_LIBS})
   endif(OpenCV_FOUND)
