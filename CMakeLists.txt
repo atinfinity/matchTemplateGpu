@@ -5,8 +5,12 @@ find_package(CUDA REQUIRED)
 
 file(GLOB SOURCES "*.cu" "*.cpp" "*.c" "cuh" "*.h" "*.hpp")
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGCXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -march=native")
+endif()
+
 if(CUDA_FOUND)
-  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-std c++11")
+  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Xcompiler -std=c++11")
   set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-gencode arch=compute_61,code=sm_61")
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
